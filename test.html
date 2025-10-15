@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Firebase Test - MineZ ZONE</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%);
+            color: white;
+            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        .container {
+            max-width: 500px;
+            width: 100%;
+            background: rgba(255,255,255,0.1);
+            border: 2px solid #00ffff;
+            border-radius: 15px;
+            padding: 30px;
+            text-align: center;
+        }
+        h1 {
+            font-size: 24px;
+            margin-bottom: 20px;
+            color: #00ffff;
+        }
+        .status {
+            padding: 20px;
+            border-radius: 10px;
+            margin: 15px 0;
+            font-size: 18px;
+            font-weight: bold;
+        }
+        .loading {
+            background: rgba(255, 255, 0, 0.2);
+            color: #ffff00;
+            border: 2px solid #ffff00;
+        }
+        .success {
+            background: rgba(0, 255, 0, 0.2);
+            color: #00ff00;
+            border: 2px solid #00ff00;
+        }
+        .error {
+            background: rgba(255, 0, 0, 0.2);
+            color: #ff0000;
+            border: 2px solid #ff0000;
+        }
+        .icon {
+            font-size: 48px;
+            margin-bottom: 15px;
+        }
+        .details {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+            text-align: left;
+            font-size: 14px;
+            line-height: 1.8;
+        }
+        button {
+            margin-top: 20px;
+            padding: 15px 30px;
+            background: linear-gradient(135deg, #ff0000, #0080ff);
+            border: none;
+            border-radius: 50px;
+            color: white;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .spinner {
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            border-top: 4px solid #00ffff;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+    
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-storage-compat.js"></script>
+</head>
+<body>
+    <div class="container">
+        <h1>🔥 Firebase Connection Test</h1>
+        
+        <div id="status" class="status loading">
+            <div class="spinner"></div>
+            <p>Testing Firebase Connection...</p>
+        </div>
+
+        <div id="details" class="details" style="display:none;"></div>
+
+        <button onclick="runTest()" style="display:none;" id="retryBtn">
+            🔄 Test Again
+        </button>
+
+        <button onclick="location.href='index.html'" style="margin-top:20px;">
+            🏠 Go to Homepage
+        </button>
+    </div>
+
+    <script src="js/firebase-config.js"></script>
+    
+    <script>
+        async function runTest() {
+            const statusDiv = document.getElementById('status');
+            const detailsDiv = document.getElementById('details');
+            const retryBtn = document.getElementById('retryBtn');
+
+            // Reset
+            statusDiv.className = 'status loading';
+            statusDiv.innerHTML = '<div class="spinner"></div><p>Testing...</p>';
+            detailsDiv.style.display = 'none';
+            retryBtn.style.display = 'none';
+
+            let results = [];
+
+            // Test 1: Check if Firebase is initialized
+            try {
+                if (typeof firebase === 'undefined') {
+                    throw new Error('Firebase SDK not loaded');
+                }
+                results.push('✅ Firebase SDK loaded');
+            } catch (error) {
+                results.push('❌ Firebase SDK not loaded');
+                showError(results);
+                return;
+            }
+
+            // Test 2: Check if database is initialized
+            try {
+                if (typeof database === 'undefined') {
+                    throw new Error('Database not initialized');
+                }
+                results.push('✅ Database initialized');
+            } catch (error) {
+                results.push('❌ Database not initialized');
+                showError(results);
+                return;
+            }
+
+            // Test 3: Check if storage is initialized
+            try {
+                if (typeof storage === 'undefined') {
+                    throw new Error('Storage not initialized');
+                }
+                results.push('✅ Storage initialized');
+            } catch (error) {
+                results.push('❌ Storage not initialized');
+                showError(results);
+                return;
+            }
+
+            // Test 4: Try to read from database
+            try {
+                const testRef = database.ref('test-connection');
+                await testRef.set({
+                    timestamp: new Date().toISOString(),
+                    message: 'Connection test from mobile'
+                });
+                results.push('✅ Database write successful');
+
+                const snapshot = await testRef.once('value');
+                if (snapshot.exists()) {
+                    results.push('✅ Database read successful');
+                    await testRef.remove(); // Clean up
+                } else {
+                    results.push('⚠️ Database read returned no data');
+                }
+            } catch (error) {
+                results.push('❌ Database error: ' + error.message);
+                showError(results);
+                return;
+            }
+
+            // Test 5: Check if admin account exists
+            try {
+                const adminRef = database.ref('users/asheneditz');
+                const snapshot = await adminRef.once('value');
+                if (snapshot.exists()) {
+                    const admin = snapshot.val();
+                    results.push('✅ Admin account found');
+                    results.push('   Username: ' + admin.username);
+                    results.push('   IsAdmin: ' + admin.isAdmin);
+                } else {
+                    results.push('⚠️ Admin account not found');
+                }
+            } catch (error) {
+                results.push('⚠️ Cannot check admin: ' + error.message);
+            }
+
+            // All tests passed!
+            showSuccess(results);
+        }
+
+        function showSuccess(results) {
+            const statusDiv = document.getElementById('status');
+            const detailsDiv = document.getElementById('details');
+            const retryBtn = document.getElementById('retryBtn');
+
+            statusDiv.className = 'status success';
+            statusDiv.innerHTML = `
+                <div class="icon">✅</div>
+                <p>Firebase Connected!</p>
+            `;
+
+            detailsDiv.innerHTML = '<strong>Test Results:</strong><br>' + results.join('<br>');
+            detailsDiv.style.display = 'block';
+            retryBtn.style.display = 'inline-block';
+        }
+
+        function showError(results) {
+            const statusDiv = document.getElementById('status');
+            const detailsDiv = document.getElementById('details');
+            const retryBtn = document.getElementById('retryBtn');
+
+            statusDiv.className = 'status error';
+            statusDiv.innerHTML = `
+                <div class="icon">❌</div>
+                <p>Firebase NOT Connected</p>
+            `;
+
+            detailsDiv.innerHTML = '<strong>Test Results:</strong><br>' + results.join('<br>');
+            detailsDiv.style.display = 'block';
+            retryBtn.style.display = 'inline-block';
+        }
+
+        // Auto-run test on page load
+        window.addEventListener('load', () => {
+            setTimeout(runTest, 1000);
+        });
+    </script>
+</body>
+  </html>
