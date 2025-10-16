@@ -66,4 +66,27 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 });
 
+// NEW: Toggle chat window
+function toggleChatWindow() {
+    const chatWindow = document.getElementById('chatWindow');
+    const chatToggleBtn = document.getElementById('chatToggleBtn');
+    const notification = document.getElementById('chatNotification');
+    
+    if (chatWindow && chatToggleBtn) {
+        if (chatWindow.classList.contains('active')) {
+            chatWindow.classList.remove('active');
+            chatToggleBtn.innerHTML = '<i class="fas fa-comments"></i>';
+        } else {
+            chatWindow.classList.add('active');
+            chatToggleBtn.innerHTML = '<i class="fas fa-times"></i>';
+            if (notification) notification.style.display = 'none';
+        }
+    }
+}
+
+// Legacy support
+function toggleChat() {
+    toggleChatWindow();
+}
+
 console.log('✨ Animations loaded!');
