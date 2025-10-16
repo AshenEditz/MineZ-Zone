@@ -3,228 +3,302 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MineZ ZONE - Minecraft Content Hub</title>
+    <title>MineZ ZONE - Minecraft Community Hub</title>
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
-    <!-- Firebase SDK -->
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-storage-compat.js"></script>
 </head>
 <body>
-    <!-- Animated Background -->
-    <div class="animated-bg">
-        <div class="cube cube-1"></div>
-        <div class="cube cube-2"></div>
-        <div class="cube cube-3"></div>
-        <div class="cube cube-4"></div>
-        <div class="cube cube-5"></div>
-    </div>
-
-    <!-- Mobile Menu Overlay -->
-    <div class="mobile-menu-overlay" id="mobileMenuOverlay" onclick="toggleMobileMenu()"></div>
-
-    <!-- Header -->
-    <header class="header">
-        <nav class="navbar">
-            <div class="logo" onclick="location.href='index.html'">
-                <i class="fas fa-cube"></i>
-                <span class="logo-text">MineZ ZONE</span>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <i class="fas fa-cubes"></i>
+                <span>MineZ ZONE</span>
             </div>
-
-            <button class="mobile-menu-btn" onclick="toggleMobileMenu()">
-                <i class="fas fa-bars"></i>
+            <button class="nav-toggle" id="navToggle">
+                <span></span>
+                <span></span>
+                <span></span>
             </button>
-
-            <ul class="nav-links" id="navLinks">
+            <ul class="nav-menu" id="navMenu">
                 <li><a href="index.html" class="active"><i class="fas fa-home"></i> Home</a></li>
-                <li><a href="#categories"><i class="fas fa-th"></i> Categories</a></li>
                 <li><a href="upload.html"><i class="fas fa-upload"></i> Upload</a></li>
-                <li><a href="#chat"><i class="fas fa-comments"></i> Chat</a></li>
+                <li><a href="categories.html"><i class="fas fa-th-large"></i> Categories</a></li>
+                <li><a href="about.html"><i class="fas fa-info-circle"></i> About</a></li>
+                <li class="auth-buttons">
+                    <a href="login.html" class="btn-login" id="loginBtn"><i class="fas fa-sign-in-alt"></i> Login</a>
+                    <a href="signup.html" class="btn-signup" id="signupBtn"><i class="fas fa-user-plus"></i> Sign Up</a>
+                    <div class="user-menu" id="userMenu" style="display: none;">
+                        <button class="user-button" id="userButton">
+                            <img src="" alt="Avatar" id="userAvatar" class="user-avatar">
+                            <span id="userName">User</span>
+                            <i class="fas fa-chevron-down"></i>
+                        </button>
+                        <div class="dropdown-menu" id="dropdownMenu">
+                            <a href="profile.html"><i class="fas fa-user"></i> Profile</a>
+                            <a href="my-uploads.html"><i class="fas fa-folder"></i> My Uploads</a>
+                            <a href="admin.html" id="adminLink" style="display: none;"><i class="fas fa-shield-alt"></i> Admin Panel</a>
+                            <a href="#" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Logout</a>
+                        </div>
+                    </div>
+                </li>
             </ul>
-
-            <div class="auth-buttons">
-                <button class="btn-login" onclick="location.href='login.html'">
-                    <i class="fas fa-sign-in-alt"></i> <span class="btn-text">Login</span>
-                </button>
-                <button class="btn-signup" onclick="location.href='login.html?mode=signup'">
-                    <i class="fas fa-user-plus"></i> <span class="btn-text">Sign Up</span>
-                </button>
-                <div class="user-profile" id="userProfile" style="display:none;">
-                    <img src="" alt="User" class="user-avatar" id="userAvatar">
-                    <span id="userName"></span>
-                    <button onclick="logout()" class="btn-logout"><i class="fas fa-sign-out-alt"></i></button>
-                </div>
-            </div>
-        </nav>
-    </header>
+        </div>
+    </nav>
 
     <!-- Hero Section -->
     <section class="hero">
         <div class="hero-content">
-            <h1 class="glitch" data-text="MineZ ZONE">MineZ ZONE</h1>
-            <p class="animated-text">Your Ultimate Minecraft Content Hub 🎮</p>
+            <h1 class="hero-title">Welcome to MineZ ZONE</h1>
+            <p class="hero-subtitle">Your Ultimate Minecraft Resource Hub</p>
             <div class="hero-buttons">
-                <button class="btn-primary pulse-btn" onclick="scrollToSection('categories')">
-                    <i class="fas fa-download"></i> Browse Content
-                </button>
-                <button class="btn-secondary" onclick="location.href='upload.html'">
-                    <i class="fas fa-upload"></i> Upload Now
-                </button>
+                <a href="categories.html" class="btn-primary">
+                    <i class="fas fa-compass"></i> Explore Content
+                </a>
+                <a href="upload.html" class="btn-secondary">
+                    <i class="fas fa-cloud-upload-alt"></i> Upload Content
+                </a>
             </div>
         </div>
-        
         <div class="hero-stats">
-            <div class="stat-card">
-                <div class="stat-icon"><i class="fas fa-file-archive"></i></div>
-                <h3 id="totalUploads">0</h3>
-                <p>Total Uploads</p>
+            <div class="stat-item">
+                <div class="stat-number" id="totalMaps">0</div>
+                <div class="stat-label">Maps</div>
             </div>
-            <div class="stat-card">
-                <div class="stat-icon"><i class="fas fa-users"></i></div>
-                <h3 id="totalUsers">0</h3>
-                <p>Active Users</p>
+            <div class="stat-item">
+                <div class="stat-number" id="totalMods">0</div>
+                <div class="stat-label">Mods</div>
             </div>
-            <div class="stat-card">
-                <div class="stat-icon"><i class="fas fa-download"></i></div>
-                <h3 id="totalDownloads">0</h3>
-                <p>Downloads</p>
+            <div class="stat-item">
+                <div class="stat-number" id="totalTextures">0</div>
+                <div class="stat-label">Textures</div>
             </div>
-        </div>
-    </section>
-
-    <!-- Categories Section -->
-    <section id="categories" class="categories">
-        <h2 class="section-title animate-on-scroll">
-            <i class="fas fa-layer-group"></i> Browse Categories
-        </h2>
-        
-        <div class="category-grid">
-            <div class="category-card animate-on-scroll" onclick="filterCategory('addons')">
-                <div class="category-icon"><i class="fas fa-puzzle-piece"></i></div>
-                <h3>MC Addons</h3>
-                <p>Enhance your gameplay</p>
-                <span class="count" id="addonsCount">0 items</span>
-            </div>
-
-            <div class="category-card animate-on-scroll" onclick="filterCategory('packs')">
-                <div class="category-icon"><i class="fas fa-box"></i></div>
-                <h3>MC Packs</h3>
-                <p>Resource & Behavior Packs</p>
-                <span class="count" id="packsCount">0 items</span>
-            </div>
-
-            <div class="category-card animate-on-scroll" onclick="filterCategory('skins')">
-                <div class="category-icon"><i class="fas fa-user"></i></div>
-                <h3>Minecraft Skins</h3>
-                <p>Customize your character</p>
-                <span class="count" id="skinsCount">0 items</span>
-            </div>
-
-            <div class="category-card animate-on-scroll" onclick="filterCategory('worlds')">
-                <div class="category-icon"><i class="fas fa-globe"></i></div>
-                <h3>MC Worlds</h3>
-                <p>Explore new worlds</p>
-                <span class="count" id="worldsCount">0 items</span>
-            </div>
-
-            <div class="category-card animate-on-scroll" onclick="filterCategory('servers')">
-                <div class="category-icon"><i class="fas fa-server"></i></div>
-                <h3>Best Servers</h3>
-                <p>Join amazing servers</p>
-                <span class="count" id="serversCount">0 items</span>
+            <div class="stat-item">
+                <div class="stat-number" id="totalUsers">0</div>
+                <div class="stat-label">Users</div>
             </div>
         </div>
     </section>
 
-    <!-- Content Display Section -->
-    <section class="content-section">
-        <div class="content-header animate-on-scroll">
-            <h2 class="section-title"><i class="fas fa-fire"></i> Latest Uploads</h2>
-            <div class="filter-controls">
-                <select id="sortBy" onchange="sortContent()">
-                    <option value="latest">🆕 Latest</option>
-                    <option value="popular">🔥 Most Popular</option>
-                    <option value="downloads">⬇️ Most Downloaded</option>
-                </select>
-                <div class="search-box">
-                    <i class="fas fa-search"></i>
-                    <input type="text" id="searchInput" placeholder="Search..." oninput="searchContent()">
+    <!-- Featured Categories -->
+    <section class="categories-section">
+        <div class="container">
+            <h2 class="section-title">Browse Categories</h2>
+            <div class="categories-grid">
+                <div class="category-card" data-category="maps">
+                    <div class="category-icon">
+                        <i class="fas fa-map"></i>
+                    </div>
+                    <h3>Maps</h3>
+                    <p>Explore amazing Minecraft maps</p>
+                    <span class="category-count" id="mapsCount">0 items</span>
+                </div>
+                <div class="category-card" data-category="mods">
+                    <div class="category-icon">
+                        <i class="fas fa-puzzle-piece"></i>
+                    </div>
+                    <h3>Mods</h3>
+                    <p>Enhance your gameplay with mods</p>
+                    <span class="category-count" id="modsCount">0 items</span>
+                </div>
+                <div class="category-card" data-category="texture-packs">
+                    <div class="category-icon">
+                        <i class="fas fa-palette"></i>
+                    </div>
+                    <h3>Texture Packs</h3>
+                    <p>Change the look of Minecraft</p>
+                    <span class="category-count" id="texturesCount">0 items</span>
+                </div>
+                <div class="category-card" data-category="data-packs">
+                    <div class="category-icon">
+                        <i class="fas fa-database"></i>
+                    </div>
+                    <h3>Data Packs</h3>
+                    <p>Customize game mechanics</p>
+                    <span class="category-count" id="dataPacksCount">0 items</span>
+                </div>
+                <div class="category-card" data-category="shaders">
+                    <div class="category-icon">
+                        <i class="fas fa-sun"></i>
+                    </div>
+                    <h3>Shaders</h3>
+                    <p>Stunning visual effects</p>
+                    <span class="category-count" id="shadersCount">0 items</span>
+                </div>
+                <div class="category-card" data-category="skins">
+                    <div class="category-icon">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <h3>Skins</h3>
+                    <p>Personalize your character</p>
+                    <span class="category-count" id="skinsCount">0 items</span>
                 </div>
             </div>
         </div>
-        
-        <div class="content-grid" id="contentGrid">
-            <div class="loading-spinner">
-                <i class="fas fa-spinner fa-spin"></i>
-                <p>Loading content...</p>
+    </section>
+
+    <!-- Latest Uploads -->
+    <section class="content-section">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Latest Uploads</h2>
+                <a href="categories.html" class="view-all">View All <i class="fas fa-arrow-right"></i></a>
+            </div>
+            <div class="content-grid" id="latestContent">
+                <!-- Content will be loaded dynamically -->
+                <div class="loading-spinner">
+                    <i class="fas fa-spinner fa-spin"></i>
+                    <p>Loading content...</p>
+                </div>
             </div>
         </div>
     </section>
 
-    <!-- Chat Box -->
-    <div class="chat-container" id="chatContainer">
-        <div class="chat-header" onclick="toggleChat()">
-            <div>
-                <i class="fas fa-comments"></i>
-                <span>MineZ Chat</span>
+    <!-- Popular Content -->
+    <section class="content-section popular-section">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Most Popular</h2>
+                <a href="categories.html?sort=popular" class="view-all">View All <i class="fas fa-arrow-right"></i></a>
             </div>
-            <span class="chat-toggle"><i class="fas fa-chevron-down"></i></span>
+            <div class="content-grid" id="popularContent">
+                <!-- Content will be loaded dynamically -->
+                <div class="loading-spinner">
+                    <i class="fas fa-spinner fa-spin"></i>
+                    <p>Loading popular content...</p>
+                </div>
+            </div>
         </div>
-        <div class="chat-body" id="chatBody">
-            <div class="chat-messages" id="chatMessages"></div>
-            <div class="chat-input">
-                <input type="text" id="chatMessageInput" placeholder="Type a message..." maxlength="500">
-                <button onclick="sendMessage()"><i class="fas fa-paper-plane"></i></button>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features-section">
+        <div class="container">
+            <h2 class="section-title">Why Choose MineZ ZONE?</h2>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-bolt"></i>
+                    </div>
+                    <h3>Fast Downloads</h3>
+                    <p>Lightning-fast download speeds for all content</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <h3>Safe & Secure</h3>
+                    <p>All uploads are scanned and verified</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <h3>Community Driven</h3>
+                    <p>Share and discover content from the community</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-cloud-upload-alt"></i>
+                    </div>
+                    <h3>Easy Upload</h3>
+                    <p>Simple and intuitive upload process</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3><i class="fas fa-cubes"></i> MineZ ZONE</h3>
+                    <p>Your ultimate destination for Minecraft maps, mods, textures, and more!</p>
+                    <div class="social-links">
+                        <a href="#" aria-label="Discord"><i class="fab fa-discord"></i></a>
+                        <a href="#" aria-label="YouTube"><i class="fab fa-youtube"></i></a>
+                        <a href="#" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
+                        <a href="#" aria-label="GitHub"><i class="fab fa-github"></i></a>
+                    </div>
+                </div>
+                <div class="footer-section">
+                    <h4>Quick Links</h4>
+                    <ul>
+                        <li><a href="index.html">Home</a></li>
+                        <li><a href="categories.html">Categories</a></li>
+                        <li><a href="upload.html">Upload</a></li>
+                        <li><a href="about.html">About</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Categories</h4>
+                    <ul>
+                        <li><a href="categories.html?cat=maps">Maps</a></li>
+                        <li><a href="categories.html?cat=mods">Mods</a></li>
+                        <li><a href="categories.html?cat=texture-packs">Texture Packs</a></li>
+                        <li><a href="categories.html?cat=shaders">Shaders</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Support</h4>
+                    <ul>
+                        <li><a href="#">Help Center</a></li>
+                        <li><a href="#">Terms of Service</a></li>
+                        <li><a href="#">Privacy Policy</a></li>
+                        <li><a href="#">Contact Us</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 MineZ ZONE. All rights reserved. Not affiliated with Mojang or Microsoft.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Chat Widget -->
+    <div class="chat-widget" id="chatWidget">
+        <div class="chat-toggle" id="chatToggle">
+            <i class="fas fa-comments"></i>
+            <span class="chat-badge" id="chatBadge">0</span>
+        </div>
+        <div class="chat-window" id="chatWindow">
+            <div class="chat-header">
+                <h3><i class="fas fa-comments"></i> Community Chat</h3>
+                <button class="chat-close" id="chatClose">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="chat-messages" id="chatMessages">
+                <!-- Messages will be loaded here -->
+            </div>
+            <div class="chat-input-container" id="chatInputContainer">
+                <input type="text" id="chatInput" placeholder="Type a message..." disabled>
+                <button id="chatSend" disabled>
+                    <i class="fas fa-paper-plane"></i>
+                </button>
+            </div>
+            <div class="chat-login-prompt" id="chatLoginPrompt">
+                <p>Please <a href="login.html">login</a> to chat</p>
             </div>
         </div>
     </div>
 
-    <!-- Scroll to Top -->
-    <button class="scroll-to-top" id="scrollToTop" onclick="scrollToTop()">
+    <!-- Scroll to Top Button -->
+    <button class="scroll-top" id="scrollTop">
         <i class="fas fa-arrow-up"></i>
     </button>
 
-    <!-- Footer -->
-    <footer class="footer">
-        <div class="footer-content">
-            <div class="footer-section">
-                <h3><i class="fas fa-cube"></i> MineZ ZONE</h3>
-                <p>Your ultimate destination for Minecraft content!</p>
-                <div class="social-links">
-                    <a href="#"><i class="fab fa-discord"></i></a>
-                    <a href="#"><i class="fab fa-twitter"></i></a>
-                    <a href="#"><i class="fab fa-youtube"></i></a>
-                    <a href="#"><i class="fab fa-instagram"></i></a>
-                </div>
-            </div>
-            <div class="footer-section">
-                <h4>Quick Links</h4>
-                <ul>
-                    <li><a href="index.html"><i class="fas fa-home"></i> Home</a></li>
-                    <li><a href="upload.html"><i class="fas fa-upload"></i> Upload</a></li>
-                    <li><a href="#categories"><i class="fas fa-th"></i> Categories</a></li>
-                </ul>
-            </div>
-            <div class="footer-section">
-                <h4>Categories</h4>
-                <ul>
-                    <li><a href="#" onclick="filterCategory('addons')">MC Addons</a></li>
-                    <li><a href="#" onclick="filterCategory('packs')">MC Packs</a></li>
-                    <li><a href="#" onclick="filterCategory('skins')">Skins</a></li>
-                </ul>
-            </div>
-        </div>
-        <div class="footer-bottom">
-            <p>&copy; 2024 MineZ ZONE. Made with <i class="fas fa-heart heartbeat"></i> for Minecraft</p>
-        </div>
-    </footer>
-
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-storage-compat.js"></script>
+    
+    <!-- Scripts -->
     <script src="js/firebase-config.js"></script>
     <script src="js/auth.js"></script>
     <script src="js/chat.js"></script>
     <script src="js/main.js"></script>
-    <script src="js/animations.js"></script>
+    <script src="js/home.js"></script>
 </body>
 </html>
