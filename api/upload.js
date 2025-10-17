@@ -1,20 +1,19 @@
-// api/upload.js
-const fetch = require('node-fetch');
+// api/upload.js - No external dependencies needed!
 
 module.exports = async (req, res) => {
-    // Enable CORS for all origins
+    // Enable CORS
     res.setHeader('Access-Control-Allow-Credentials', 'true');
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,PATCH,DELETE,POST,PUT');
     res.setHeader('Access-Control-Allow-Headers', 'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version');
 
-    // Handle preflight request
+    // Handle preflight
     if (req.method === 'OPTIONS') {
         res.status(200).end();
         return;
     }
 
-    // Only allow POST requests
+    // Only allow POST
     if (req.method !== 'POST') {
         res.status(405).json({ 
             success: false, 
@@ -37,12 +36,12 @@ module.exports = async (req, res) => {
         const GITHUB_REPO = 'minez-zone-storage';
 
         if (!GITHUB_TOKEN) {
-            throw new Error('GitHub token not configured');
+            throw new Error('GitHub token not configured. Please add GITHUB_TOKEN to environment variables.');
         }
 
         console.log('📤 Uploading to GitHub:', path);
 
-        // Upload to GitHub
+        // Use native fetch (available in Node.js 18+)
         const response = await fetch(
             `https://api.github.com/repos/${GITHUB_USERNAME}/${GITHUB_REPO}/contents/${path}`,
             {
@@ -70,12 +69,12 @@ module.exports = async (req, res) => {
             throw new Error(data.message || 'GitHub upload failed');
         }
 
-        // Generate raw URL for direct access
+        // Generate raw URL
         const rawUrl = `https://raw.githubusercontent.com/${GITHUB_USERNAME}/${GITHUB_REPO}/main/${path}`;
 
         console.log('✅ Upload successful:', rawUrl);
 
-        // Return success response
+        // Return success
         res.status(200).json({
             success: true,
             url: rawUrl,
