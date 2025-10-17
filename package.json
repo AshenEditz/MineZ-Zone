@@ -3,10 +3,7 @@
   "version": "1.0.0",
   "description": "MineZ Zone - Minecraft Community Platform",
   "main": "index.html",
-  "dependencies": {
-    "node-fetch": "^2.7.0"
-  },
   "engines": {
-    "node": "18.x"
+    "node": "22.x"
   }
 }
