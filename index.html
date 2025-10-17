@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MineZ Zone - Minecraft Addons & More</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Animated Background -->
+    <div class="animated-background">
+        <div class="cube"></div>
+        <div class="cube"></div>
+        <div class="cube"></div>
+        <div class="cube"></div>
+        <div class="cube"></div>
+    </div>
+
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="logo">
+                <i class="fas fa-cube"></i>
+                <span class="logo-text">MineZ Zone</span>
+            </div>
+            <nav class="nav-menu" id="navMenu">
+                <a href="#home" class="nav-link active">Home</a>
+                <a href="#addons" class="nav-link">Addons</a>
+                <a href="#templates" class="nav-link">Templates</a>
+                <a href="#shaders" class="nav-link">Shaders</a>
+                <a href="#skins" class="nav-link">3D Skins</a>
+                <a href="#servers" class="nav-link">Servers</a>
+                <a href="#leaderboard" class="nav-link" id="leaderboardLink" style="display:none;">Leaderboard</a>
+            </nav>
+            <div class="auth-buttons">
+                <button class="btn btn-login" id="loginBtn">Login</button>
+                <button class="btn btn-register" id="registerBtn">Register</button>
+                <div class="user-profile" id="userProfile" style="display:none;">
+                    <img src="https://ui-avatars.com/api/?name=User&background=00ffff&color=000" alt="Profile" class="profile-img" id="profileImg">
+                    <span class="username" id="headerUsername"></span>
+                    <button class="btn btn-logout" id="logoutBtn">Logout</button>
+                </div>
+            </div>
+            <div class="mobile-toggle" id="mobileToggle">
+                <i class="fas fa-bars"></i>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Home Section -->
+        <section id="home" class="section hero-section">
+            <div class="container">
+                <div class="hero-content">
+                    <h1 class="hero-title animated-text">Welcome to <span class="highlight">MineZ Zone</span></h1>
+                    <p class="hero-subtitle">Your Ultimate Minecraft Community Hub</p>
+                    <p class="hero-description">Download & Upload Addons, Templates, Shaders, Skins & Join Amazing Servers!</p>
+                    <div class="hero-stats">
+                        <div class="stat-item">
+                            <i class="fas fa-download"></i>
+                            <span class="stat-number" id="totalDownloads">0</span>
+                            <span class="stat-label">Downloads</span>
+                        </div>
+                        <div class="stat-item">
+                            <i class="fas fa-users"></i>
+                            <span class="stat-number" id="totalUsers">0</span>
+                            <span class="stat-label">Users</span>
+                        </div>
+                        <div class="stat-item">
+                            <i class="fas fa-cube"></i>
+                            <span class="stat-number" id="totalContent">0</span>
+                            <span class="stat-label">Content</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Featured Content -->
+                <div class="featured-section">
+                    <h2 class="section-title">Featured Content</h2>
+                    <div class="content-categories">
+                        <div class="category-card" onclick="navigateTo('addons')">
+                            <i class="fas fa-puzzle-piece"></i>
+                            <h3>MC Addons</h3>
+                            <p>Enhance your gameplay</p>
+                            <button class="btn btn-primary">Explore</button>
+                        </div>
+                        <div class="category-card" onclick="navigateTo('templates')">
+                            <i class="fas fa-map"></i>
+                            <h3>Templates</h3>
+                            <p>Amazing worlds</p>
+                            <button class="btn btn-primary">Explore</button>
+                        </div>
+                        <div class="category-card" onclick="navigateTo('shaders')">
+                            <i class="fas fa-sun"></i>
+                            <h3>Shaders</h3>
+                            <p>Beautiful graphics</p>
+                            <button class="btn btn-primary">Explore</button>
+                        </div>
+                        <div class="category-card" onclick="navigateTo('skins')">
+                            <i class="fas fa-user"></i>
+                            <h3>3D Skins</h3>
+                            <p>Unique characters</p>
+                            <button class="btn btn-primary">Explore</button>
+                        </div>
+                        <div class="category-card" onclick="navigateTo('servers')">
+                            <i class="fas fa-server"></i>
+                            <h3>Servers</h3>
+                            <p>Join the community</p>
+                            <button class="btn btn-primary">Explore</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent Uploads -->
+                <div class="recent-uploads">
+                    <h2 class="section-title">Recent Uploads</h2>
+                    <div class="content-grid" id="recentContent">
+                        <!-- Dynamic content will be loaded here -->
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Addons Section -->
+        <section id="addons" class="section content-section" style="display:none;">
+            <div class="container">
+                <div class="section-header">
+                    <h2 class="section-title">MC Addons</h2>
+                    <button class="btn btn-primary" id="uploadAddonBtn" style="display:none;">
+                        <i class="fas fa-upload"></i> Upload Addon
+                    </button>
+                </div>
+                <div class="content-grid" id="addonsGrid">
+                    <!-- Dynamic content -->
+                </div>
+            </div>
+        </section>
+
+        <!-- Templates Section -->
+        <section id="templates" class="section content-section" style="display:none;">
+            <div class="container">
+                <div class="section-header">
+                    <h2 class="section-title">MC Templates</h2>
+                    <button class="btn btn-primary" id="uploadTemplateBtn" style="display:none;">
+                        <i class="fas fa-upload"></i> Upload Template
+                    </button>
+                </div>
+                <div class="content-grid" id="templatesGrid">
+                    <!-- Dynamic content -->
+                </div>
+            </div>
+        </section>
+
+        <!-- Shaders Section -->
+        <section id="shaders" class="section content-section" style="display:none;">
+            <div class="container">
+                <div class="section-header">
+                    <h2 class="section-title">MC Shaders</h2>
+                    <button class="btn btn-primary" id="uploadShaderBtn" style="display:none;">
+                        <i class="fas fa-upload"></i> Upload Shader
+                    </button>
+                </div>
+                <div class="content-grid" id="shadersGrid">
+                    <!-- Dynamic content -->
+                </div>
+            </div>
+        </section>
+
+        <!-- Skins Section -->
+        <section id="skins" class="section content-section" style="display:none;">
+            <div class="container">
+                <div class="section-header">
+                    <h2 class="section-title">3D Skins</h2>
+                    <button class="btn btn-primary" id="uploadSkinBtn" style="display:none;">
+                        <i class="fas fa-upload"></i> Upload Skin
+                    </button>
+                </div>
+                <div class="content-grid" id="skinsGrid">
+                    <!-- Dynamic content -->
+                </div>
+            </div>
+        </section>
+
+        <!-- Servers Section -->
+        <section id="servers" class="section content-section" style="display:none;">
+            <div class="container">
+                <div class="section-header">
+                    <h2 class="section-title">Minecraft Servers</h2>
+                    <button class="btn btn-primary" id="uploadServerBtn" style="display:none;">
+                        <i class="fas fa-upload"></i> Add Server
+                    </button>
+                </div>
+
+                <!-- Top Servers -->
+                <div class="top-servers">
+                    <h3 class="subsection-title">Top Servers</h3>
+                    <div class="server-list">
+                        <div class="server-card top-server">
+                            <div class="server-badge">TOP</div>
+                            <img src="https://via.placeholder.com/100x100/00ffff/000000?text=Tefa+Craft" alt="Server" class="server-img">
+                            <div class="server-info">
+                                <h4>Tefa Craft Network (Bedrock)</h4>
+                                <p class="server-description">Amazing survival server with custom features!</p>
+                                <div class="server-details">
+                                    <div class="server-ip">
+                                        <i class="fas fa-globe"></i>
+                                        <span>https://info.aternos.me</span>
+                                        <button class="copy-btn" onclick="copyText('https://info.aternos.me')"><i class="fas fa-copy"></i></button>
+                                    </div>
+                                    <div class="server-port">
+                                        <i class="fas fa-network-wired"></i>
+                                        <span>11640</span>
+                                        <button class="copy-btn" onclick="copyText('11640')"><i class="fas fa-copy"></i></button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="server-card top-server">
+                            <div class="server-badge">TOP</div>
+                            <img src="https://via.placeholder.com/100x100/ff0000/ffffff?text=Tefa+Horror" alt="Server" class="server-img">
+                            <div class="server-info">
+                                <h4>Tefa Horror Craft Network</h4>
+                                <p class="server-description">Spooky adventures await you!</p>
+                                <div class="server-details">
+                                    <div class="server-ip">
+                                        <i class="fas fa-globe"></i>
+                                        <span>https://send.aternos.me</span>
+                                        <button class="copy-btn" onclick="copyText('https://send.aternos.me')"><i class="fas fa-copy"></i></button>
+                                    </div>
+                                    <div class="server-port">
+                                        <i class="fas fa-network-wired"></i>
+                                        <span>27097</span>
+                                        <button class="copy-btn" onclick="copyText('27097')"><i class="fas fa-copy"></i></button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Other Servers -->
+                <div class="other-servers">
+                    <h3 class="subsection-title">Community Servers</h3>
+                    <div class="server-list" id="communityServers">
+                        <!-- Dynamic content -->
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Leaderboard Section -->
+        <section id="leaderboard" class="section content-section" style="display:none;">
+            <div class="container">
+                <h2 class="section-title">Leaderboard</h2>
+                <div class="leaderboard-container">
+                    <div class="leaderboard-header">
+                        <span>Rank</span>
+                        <span>User</span>
+                        <span>Uploads</span>
+                        <span>Points</span>
+                    </div>
+                    <div class="leaderboard-list" id="leaderboardList">
+                        <!-- Dynamic content -->
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Profile Section -->
+        <section id="profile" class="section content-section" style="display:none;">
+            <div class="container">
+                <div class="profile-container">
+                    <div class="profile-header">
+                        <img src="" alt="Profile" class="profile-avatar" id="profileAvatar">
+                        <div class="profile-info">
+                            <h2 class="profile-name" id="profileName"></h2>
+                            <div class="profile-badges" id="profileBadges"></div>
+                        </div>
+                    </div>
+                    <div class="profile-stats">
+                        <div class="profile-stat">
+                            <i class="fas fa-upload"></i>
+                            <span class="stat-number" id="profileUploads">0</span>
+                            <span class="stat-label">Uploads</span>
+                        </div>
+                        <div class="profile-stat">
+                            <i class="fas fa-download"></i>
+                            <span class="stat-number" id="profileDownloads">0</span>
+                            <span class="stat-label">Downloads</span>
+                        </div>
+                        <div class="profile-stat">
+                            <i class="fas fa-star"></i>
+                            <span class="stat-number" id="profilePoints">0</span>
+                            <span class="stat-label">Points</span>
+                        </div>
+                    </div>
+                    <div class="profile-content">
+                        <h3>My Uploads</h3>
+                        <div class="content-grid" id="profileContentGrid">
+                            <!-- Dynamic content -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Admin Panel -->
+        <section id="admin" class="section content-section" style="display:none;">
+            <div class="container">
+                <h2 class="section-title">Admin Panel</h2>
+                <div class="admin-container">
+                    <div class="admin-stats">
+                        <div class="admin-stat-card">
+                            <i class="fas fa-users"></i>
+                            <h3>Total Users</h3>
+                            <p class="admin-stat-number" id="adminTotalUsers">0</p>
+                        </div>
+                        <div class="admin-stat-card">
+                            <i class="fas fa-cube"></i>
+                            <h3>Total Content</h3>
+                            <p class="admin-stat-number" id="adminTotalContent">0</p>
+                        </div>
+                        <div class="admin-stat-card">
+                            <i class="fas fa-comments"></i>
+                            <h3>Messages</h3>
+                            <p class="admin-stat-number" id="adminTotalMessages">0</p>
+                        </div>
+                    </div>
+
+                    <div class="admin-sections">
+                        <div class="admin-section">
+                            <h3>User Management</h3>
+                            <div class="admin-users-list" id="adminUsersList">
+                                <!-- Dynamic content -->
+                            </div>
+                        </div>
+
+                        <div class="admin-section">
+                            <h3>User Messages</h3>
+                            <div class="admin-messages-list" id="adminMessagesList">
+                                <!-- Dynamic content -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3><i class="fas fa-cube"></i> MineZ Zone</h3>
+                    <p>Your ultimate Minecraft community hub for addons, templates, shaders, skins, and servers.</p>
+                    <div class="social-links">
+                        <a href="#"><i class="fab fa-discord"></i></a>
+                        <a href="#"><i class="fab fa-youtube"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                    </div>
+                </div>
+                <div class="footer-section">
+                    <h4>Quick Links</h4>
+                    <ul>
+                        <li><a href="#home">Home</a></li>
+                        <li><a href="#addons">Addons</a></li>
+                        <li><a href="#templates">Templates</a></li>
+                        <li><a href="#shaders">Shaders</a></li>
+                        <li><a href="#skins">3D Skins</a></li>
+                        <li><a href="#servers">Servers</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Support</h4>
+                    <ul>
+                        <li><a href="#">Help Center</a></li>
+                        <li><a href="#">Terms of Service</a></li>
+                        <li><a href="#">Privacy Policy</a></li>
+                        <li><a href="#" id="chatAdminBtn">Contact Admin</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Stats</h4>
+                    <p><i class="fas fa-users"></i> Users: <span id="footerUsers">0</span></p>
+                    <p><i class="fas fa-download"></i> Downloads: <span id="footerDownloads">0</span></p>
+                    <p><i class="fas fa-cube"></i> Content: <span id="footerContent">0</span></p>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 MineZ Zone. All rights reserved. | Created with ❤️ for Minecraft Community</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Chat Widget -->
+    <div class="chat-widget" id="chatWidget" style="display:none;">
+        <div class="chat-header">
+            <h4><i class="fas fa-comment"></i> Chat with Admin</h4>
+            <button class="close-chat" id="closeChatBtn"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="chat-messages" id="chatMessages">
+            <!-- Dynamic messages -->
+        </div>
+        <div class="chat-input">
+            <input type="text" id="chatMessageInput" placeholder="Type your message...">
+            <button id="sendChatBtn"><i class="fas fa-paper-plane"></i></button>
+        </div>
+    </div>
+
+    <!-- Modals -->
+    <!-- Login Modal -->
+    <div class="modal" id="loginModal">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <h2>Login to MineZ Zone</h2>
+            <form id="loginForm">
+                <div class="form-group">
+                    <label><i class="fas fa-user"></i> Username</label>
+                    <input type="text" id="loginUsername" required>
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-lock"></i> Password</label>
+                    <input type="password" id="loginPassword" required>
+                </div>
+                <button type="submit" class="btn btn-primary btn-block">Login</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Register Modal -->
+    <div class="modal" id="registerModal">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <h2>Register at MineZ Zone</h2>
+            <form id="registerForm">
+                <div class="form-group">
+                    <label><i class="fas fa-user"></i> Username</label>
+                    <input type="text" id="registerUsername" required>
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-envelope"></i> Email</label>
+                    <input type="email" id="registerEmail" required>
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-lock"></i> Password</label>
+                    <input type="password" id="registerPassword" required>
+                </div>
+                <button type="submit" class="btn btn-primary btn-block">Register</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Upload Modals -->
+    <div class="modal" id="uploadModal">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <h2 id="uploadModalTitle">Upload Content</h2>
+            <form id="uploadForm">
+                <div class="form-group">
+                    <label><i class="fas fa-heading"></i> Name</label>
+                    <input type="text" id="uploadName" required>
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-align-left"></i> Description</label>
+                    <textarea id="uploadDescription" rows="4" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-image"></i> Image</label>
+                    <input type="file" id="uploadImage" accept="image/*" required>
+                </div>
+                <div class="form-group" id="uploadFileGroup">
+                    <label><i class="fas fa-file"></i> File</label>
+                    <input type="file" id="uploadFile" required>
+                </div>
+                <input type="hidden" id="uploadType">
+                <button type="submit" class="btn btn-primary btn-block">Upload</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Server Upload Modal -->
+    <div class="modal" id="serverModal">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <h2>Add Server</h2>
+            <form id="serverForm">
+                <div class="form-group">
+                    <label><i class="fas fa-server"></i> Server Name</label>
+                    <input type="text" id="serverName" required>
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-align-left"></i> Description</label>
+                    <textarea id="serverDescription" rows="4" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-globe"></i> IP Address</label>
+                    <input type="text" id="serverIp" required>
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-network-wired"></i> Port</label>
+                    <input type="text" id="serverPort" required>
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-image"></i> Server Image</label>
+                    <input type="file" id="serverImage" accept="image/*" required>
+                </div>
+                <button type="submit" class="btn btn-primary btn-block">Add Server</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Content Detail Modal -->
+    <div class="modal" id="contentModal">
+        <div class="modal-content modal-large">
+            <span class="close-modal">&times;</span>
+            <div class="content-detail" id="contentDetail">
+                <!-- Dynamic content -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading Spinner -->
+    <div class="loading-spinner" id="loadingSpinner" style="display:none;">
+        <div class="spinner"></div>
+    </div>
+
+    <!-- Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-storage-compat.js"></script>
+
+    <script src="script.js"></script>
+</body>
+</html>

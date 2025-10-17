@@ -1,0 +1,1065 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MineZ Zone - System Test & Debug Console</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Courier New', monospace;
+            background: linear-gradient(135deg, #000000 0%, #1a0000 50%, #001a1a 100%);
+            color: #00ffff;
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            padding: 30px;
+            background: rgba(0, 0, 0, 0.8);
+            border: 2px solid #00ffff;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            box-shadow: 0 0 20px rgba(0, 255, 255, 0.5);
+        }
+
+        .header h1 {
+            color: #00ffff;
+            text-shadow: 0 0 10px #00ffff;
+            margin-bottom: 10px;
+        }
+
+        .status {
+            display: inline-block;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+
+        .status.loading {
+            background: #ffa500;
+            color: #000;
+            animation: pulse 1s infinite;
+        }
+
+        .status.success {
+            background: #00ff00;
+            color: #000;
+        }
+
+        .status.error {
+            background: #ff0000;
+            color: #fff;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .main-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .panel {
+            background: rgba(0, 0, 0, 0.8);
+            border: 2px solid #00ffff;
+            border-radius: 10px;
+            padding: 20px;
+        }
+
+        .panel h2 {
+            color: #ff0000;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #00ffff;
+            padding-bottom: 10px;
+        }
+
+        .test-section {
+            margin-bottom: 20px;
+        }
+
+        .test-section h3 {
+            color: #00ffff;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .test-item {
+            padding: 10px;
+            margin: 5px 0;
+            background: rgba(0, 255, 255, 0.1);
+            border-left: 4px solid #666;
+            border-radius: 5px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .test-item.success {
+            border-left-color: #00ff00;
+        }
+
+        .test-item.error {
+            border-left-color: #ff0000;
+        }
+
+        .test-item.warning {
+            border-left-color: #ffa500;
+        }
+
+        .icon {
+            font-size: 20px;
+        }
+
+        .icon.success { color: #00ff00; }
+        .icon.error { color: #ff0000; }
+        .icon.warning { color: #ffa500; }
+        .icon.loading { 
+            color: #00ffff;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .console {
+            background: #000;
+            border: 2px solid #00ffff;
+            border-radius: 10px;
+            padding: 20px;
+            height: 500px;
+            overflow-y: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+        }
+
+        .console-line {
+            padding: 5px;
+            border-bottom: 1px solid rgba(0, 255, 255, 0.1);
+            margin: 2px 0;
+        }
+
+        .console-line.info { color: #00ffff; }
+        .console-line.success { color: #00ff00; }
+        .console-line.error { color: #ff0000; }
+        .console-line.warning { color: #ffa500; }
+        .console-line.debug { color: #888; }
+
+        .btn {
+            padding: 12px 24px;
+            border: 2px solid #00ffff;
+            background: transparent;
+            color: #00ffff;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            margin: 5px;
+            transition: all 0.3s;
+        }
+
+        .btn:hover {
+            background: #00ffff;
+            color: #000;
+            box-shadow: 0 0 15px #00ffff;
+        }
+
+        .btn.danger {
+            border-color: #ff0000;
+            color: #ff0000;
+        }
+
+        .btn.danger:hover {
+            background: #ff0000;
+            color: #fff;
+            box-shadow: 0 0 15px #ff0000;
+        }
+
+        .btn.success {
+            border-color: #00ff00;
+            color: #00ff00;
+        }
+
+        .btn.success:hover {
+            background: #00ff00;
+            color: #000;
+            box-shadow: 0 0 15px #00ff00;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .stat-card {
+            background: rgba(0, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 10px;
+            border: 2px solid #00ffff;
+            text-align: center;
+        }
+
+        .stat-card h4 {
+            color: #00ffff;
+            margin-bottom: 10px;
+            font-size: 14px;
+        }
+
+        .stat-card .number {
+            font-size: 32px;
+            font-weight: bold;
+            color: #ff0000;
+        }
+
+        .controls {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 30px;
+            background: rgba(0, 0, 0, 0.5);
+            border: 2px solid #00ffff;
+            border-radius: 15px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #00ffff, #ff0000);
+            width: 0%;
+            transition: width 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-weight: bold;
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 10px 0;
+        }
+
+        .data-table th,
+        .data-table td {
+            padding: 10px;
+            border: 1px solid rgba(0, 255, 255, 0.3);
+            text-align: left;
+        }
+
+        .data-table th {
+            background: rgba(0, 255, 255, 0.2);
+            color: #00ffff;
+            font-weight: bold;
+        }
+
+        .data-table tr:hover {
+            background: rgba(0, 255, 255, 0.05);
+        }
+
+        .json-viewer {
+            background: #000;
+            padding: 15px;
+            border-radius: 5px;
+            border: 1px solid #00ffff;
+            overflow-x: auto;
+            margin: 10px 0;
+        }
+
+        .json-viewer pre {
+            margin: 0;
+            color: #00ff00;
+        }
+
+        .alert {
+            padding: 15px;
+            border-radius: 5px;
+            margin: 10px 0;
+            border-left: 4px solid;
+        }
+
+        .alert.info {
+            background: rgba(0, 255, 255, 0.1);
+            border-color: #00ffff;
+            color: #00ffff;
+        }
+
+        .alert.success {
+            background: rgba(0, 255, 0, 0.1);
+            border-color: #00ff00;
+            color: #00ff00;
+        }
+
+        .alert.error {
+            background: rgba(255, 0, 0, 0.1);
+            border-color: #ff0000;
+            color: #ff0000;
+        }
+
+        .alert.warning {
+            background: rgba(255, 165, 0, 0.1);
+            border-color: #ffa500;
+            color: #ffa500;
+        }
+
+        @media (max-width: 768px) {
+            .main-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 10px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #000;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #00ffff;
+            border-radius: 5px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #ff0000;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>🎮 MineZ Zone - System Test & Debug Console 🎮</h1>
+            <p>Real-time Testing & Monitoring Dashboard</p>
+            <div class="status loading" id="systemStatus">Initializing...</div>
+        </div>
+
+        <!-- Statistics -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <h4>Tests Run</h4>
+                <div class="number" id="testsRun">0</div>
+            </div>
+            <div class="stat-card">
+                <h4>Tests Passed</h4>
+                <div class="number" id="testsPassed" style="color: #00ff00;">0</div>
+            </div>
+            <div class="stat-card">
+                <h4>Tests Failed</h4>
+                <div class="number" id="testsFailed" style="color: #ff0000;">0</div>
+            </div>
+            <div class="stat-card">
+                <h4>Warnings</h4>
+                <div class="number" id="testsWarnings" style="color: #ffa500;">0</div>
+            </div>
+        </div>
+
+        <!-- Progress Bar -->
+        <div class="progress-bar">
+            <div class="progress-fill" id="progressBar">0%</div>
+        </div>
+
+        <!-- Controls -->
+        <div class="panel">
+            <h2>🎛️ Test Controls</h2>
+            <div class="controls">
+                <button class="btn success" onclick="runAllTests()">▶️ Run All Tests</button>
+                <button class="btn" onclick="testFirebase()">🔥 Test Firebase</button>
+                <button class="btn" onclick="testGitHub()">📦 Test GitHub</button>
+                <button class="btn" onclick="testAuth()">🔐 Test Authentication</button>
+                <button class="btn" onclick="testDatabase()">💾 Test Database</button>
+                <button class="btn" onclick="testStorage()">📁 Test Storage</button>
+                <button class="btn danger" onclick="clearConsole()">🗑️ Clear Console</button>
+                <button class="btn danger" onclick="clearAllData()">⚠️ Clear All Data</button>
+            </div>
+        </div>
+
+        <!-- Main Grid -->
+        <div class="main-grid">
+            <!-- Test Results -->
+            <div class="panel">
+                <h2>✅ Test Results</h2>
+                <div id="testResults">
+                    <div class="alert info">Click "Run All Tests" to start testing...</div>
+                </div>
+            </div>
+
+            <!-- System Info -->
+            <div class="panel">
+                <h2>📊 System Information</h2>
+                <div id="systemInfo"></div>
+            </div>
+        </div>
+
+        <!-- Console -->
+        <div class="panel">
+            <h2>🖥️ Debug Console</h2>
+            <div class="console" id="console">
+                <div class="console-line info">[INFO] Console initialized. Ready for testing...</div>
+                <div class="console-line info">[INFO] Waiting for user action...</div>
+            </div>
+        </div>
+
+        <!-- Data Viewer -->
+        <div class="panel">
+            <h2>📊 Live Data Viewer</h2>
+            <div class="controls">
+                <button class="btn" onclick="viewUsers()">👥 View Users</button>
+                <button class="btn" onclick="viewAddons()">🧩 View Addons</button>
+                <button class="btn" onclick="viewServers()">🖥️ View Servers</button>
+                <button class="btn" onclick="viewMessages()">💬 View Messages</button>
+                <button class="btn" onclick="viewAllData()">📦 View All Data</button>
+            </div>
+            <div id="dataViewer">
+                <div class="alert info">Select a data type to view...</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-storage-compat.js"></script>
+
+    <script>
+        // Firebase Configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyBZacr9I_ecEUKU1ZV3EsjcfGIHkfnVQdQ",
+            authDomain: "minez-zone.firebaseapp.com",
+            databaseURL: "https://minez-zone-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "minez-zone",
+            storageBucket: "minez-zone.firebasestorage.app",
+            messagingSenderId: "840393320273",
+            appId: "1:840393320273:web:b1d128705055a65b781570"
+        };
+
+        // GitHub Configuration
+        const GITHUB_TOKEN = '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';
+        const GITHUB_USERNAME = 'asheneditz';
+        const GITHUB_REPO = 'minez-zone-storage';
+
+        // Test Statistics
+        let stats = {
+            total: 0,
+            passed: 0,
+            failed: 0,
+            warnings: 0
+        };
+
+        // Initialize Firebase
+        let app, auth, database, storage;
+        
+        try {
+            app = firebase.initializeApp(firebaseConfig);
+            auth = firebase.auth();
+            database = firebase.database();
+            storage = firebase.storage();
+            log('Firebase initialized successfully', 'success');
+            updateSystemStatus('success', 'System Ready');
+        } catch (error) {
+            log('Firebase initialization failed: ' + error.message, 'error');
+            updateSystemStatus('error', 'Initialization Failed');
+        }
+
+        // Console Logger
+        function log(message, type = 'info') {
+            const console = document.getElementById('console');
+            const line = document.createElement('div');
+            line.className = `console-line ${type}`;
+            const timestamp = new Date().toLocaleTimeString();
+            line.innerHTML = `[${timestamp}] [${type.toUpperCase()}] ${message}`;
+            console.appendChild(line);
+            console.scrollTop = console.scrollHeight;
+
+            // Also log to browser console
+            console[type === 'error' ? 'error' : 'log'](`[MineZ Zone] ${message}`);
+        }
+
+        function clearConsole() {
+            document.getElementById('console').innerHTML = '';
+            log('Console cleared', 'info');
+        }
+
+        // Update System Status
+        function updateSystemStatus(status, text) {
+            const statusEl = document.getElementById('systemStatus');
+            statusEl.className = `status ${status}`;
+            statusEl.textContent = text;
+        }
+
+        // Update Statistics
+        function updateStats() {
+            document.getElementById('testsRun').textContent = stats.total;
+            document.getElementById('testsPassed').textContent = stats.passed;
+            document.getElementById('testsFailed').textContent = stats.failed;
+            document.getElementById('testsWarnings').textContent = stats.warnings;
+
+            const percentage = stats.total > 0 ? (stats.passed / stats.total * 100).toFixed(1) : 0;
+            const progressBar = document.getElementById('progressBar');
+            progressBar.style.width = percentage + '%';
+            progressBar.textContent = percentage + '%';
+        }
+
+        // Add Test Result
+        function addTestResult(name, status, message, data = null) {
+            stats.total++;
+            if (status === 'success') stats.passed++;
+            else if (status === 'error') stats.failed++;
+            else if (status === 'warning') stats.warnings++;
+            
+            updateStats();
+
+            const resultsContainer = document.getElementById('testResults');
+            
+            // Clear initial message
+            if (resultsContainer.querySelector('.alert')) {
+                resultsContainer.innerHTML = '';
+            }
+
+            const testSection = document.createElement('div');
+            testSection.className = 'test-section';
+            
+            const icons = {
+                success: '✅',
+                error: '❌',
+                warning: '⚠️',
+                loading: '⏳'
+            };
+
+            testSection.innerHTML = `
+                <div class="test-item ${status}">
+                    <div>
+                        <span class="icon ${status}">${icons[status]}</span>
+                        <strong>${name}</strong>
+                        <div style="margin-top: 5px; font-size: 12px; opacity: 0.8;">${message}</div>
+                    </div>
+                </div>
+            `;
+
+            if (data) {
+                const dataView = document.createElement('div');
+                dataView.className = 'json-viewer';
+                dataView.innerHTML = `<pre>${JSON.stringify(data, null, 2)}</pre>`;
+                testSection.appendChild(dataView);
+            }
+
+            resultsContainer.appendChild(testSection);
+        }
+
+        // System Information
+        function updateSystemInfo() {
+            const info = {
+                'User Agent': navigator.userAgent,
+                'Platform': navigator.platform,
+                'Language': navigator.language,
+                'Online': navigator.onLine,
+                'Screen Resolution': `${screen.width}x${screen.height}`,
+                'Viewport': `${window.innerWidth}x${window.innerHeight}`,
+                'Local Storage': typeof(Storage) !== "undefined",
+                'Cookies Enabled': navigator.cookieEnabled,
+                'Firebase Status': app ? 'Connected' : 'Disconnected',
+                'Current Time': new Date().toLocaleString()
+            };
+
+            let html = '<table class="data-table">';
+            for (const [key, value] of Object.entries(info)) {
+                html += `<tr><th>${key}</th><td>${value}</td></tr>`;
+            }
+            html += '</table>';
+
+            document.getElementById('systemInfo').innerHTML = html;
+        }
+
+        // Run All Tests
+        async function runAllTests() {
+            log('Starting comprehensive test suite...', 'info');
+            document.getElementById('testResults').innerHTML = '';
+            stats = { total: 0, passed: 0, failed: 0, warnings: 0 };
+            updateStats();
+
+            await testFirebase();
+            await testGitHub();
+            await testAuth();
+            await testDatabase();
+            await testStorage();
+            await testConnectivity();
+
+            log(`Test suite completed! Passed: ${stats.passed}/${stats.total}`, stats.failed > 0 ? 'warning' : 'success');
+            
+            if (stats.failed === 0) {
+                updateSystemStatus('success', 'All Tests Passed ✅');
+            } else {
+                updateSystemStatus('error', `${stats.failed} Tests Failed ❌`);
+            }
+        }
+
+        // Test Firebase
+        async function testFirebase() {
+            log('Testing Firebase connection...', 'info');
+
+            try {
+                // Test App
+                if (app) {
+                    addTestResult('Firebase App', 'success', 'Firebase app initialized successfully');
+                    log('✓ Firebase app OK', 'success');
+                } else {
+                    throw new Error('Firebase app not initialized');
+                }
+
+                // Test Auth
+                if (auth) {
+                    addTestResult('Firebase Auth', 'success', 'Authentication service available');
+                    log('✓ Firebase Auth OK', 'success');
+                } else {
+                    throw new Error('Auth service unavailable');
+                }
+
+                // Test Database
+                if (database) {
+                    const testRef = database.ref('.info/connected');
+                    const snapshot = await testRef.once('value');
+                    const connected = snapshot.val();
+                    
+                    if (connected) {
+                        addTestResult('Firebase Database', 'success', 'Database connected successfully');
+                        log('✓ Firebase Database OK', 'success');
+                    } else {
+                        addTestResult('Firebase Database', 'warning', 'Database not connected');
+                        log('⚠ Database not connected', 'warning');
+                    }
+                } else {
+                    throw new Error('Database service unavailable');
+                }
+
+                // Test Storage
+                if (storage) {
+                    addTestResult('Firebase Storage', 'success', 'Storage service available');
+                    log('✓ Firebase Storage OK', 'success');
+                } else {
+                    throw new Error('Storage service unavailable');
+                }
+
+            } catch (error) {
+                addTestResult('Firebase Connection', 'error', error.message);
+                log('✗ Firebase test failed: ' + error.message, 'error');
+            }
+        }
+
+        // Test GitHub
+        async function testGitHub() {
+            log('Testing GitHub API connection...', 'info');
+
+            try {
+                const response = await fetch(`https://api.github.com/repos/${GITHUB_USERNAME}/${GITHUB_REPO}`, {
+                    headers: {
+                        'Authorization': `token ${GITHUB_TOKEN}`
+                    }
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    addTestResult('GitHub API', 'success', `Repository: ${data.full_name}`, {
+                        name: data.name,
+                        owner: data.owner.login,
+                        private: data.private,
+                        size: data.size + ' KB'
+                    });
+                    log('✓ GitHub API OK - Repository accessible', 'success');
+                } else {
+                    const error = await response.json();
+                    addTestResult('GitHub API', 'error', `Status: ${response.status} - ${error.message}`);
+                    log('✗ GitHub API error: ' + error.message, 'error');
+                }
+
+            } catch (error) {
+                addTestResult('GitHub API', 'error', error.message);
+                log('✗ GitHub test failed: ' + error.message, 'error');
+            }
+        }
+
+        // Test Authentication
+        async function testAuth() {
+            log('Testing authentication system...', 'info');
+
+            try {
+                // Test current auth state
+                const currentUser = auth.currentUser;
+                
+                if (currentUser) {
+                    addTestResult('Auth State', 'success', `Logged in as: ${currentUser.email}`, {
+                        uid: currentUser.uid,
+                        email: currentUser.email,
+                        emailVerified: currentUser.emailVerified
+                    });
+                    log('✓ User authenticated: ' + currentUser.email, 'success');
+                } else {
+                    addTestResult('Auth State', 'warning', 'No user logged in');
+                    log('⚠ No authenticated user', 'warning');
+                }
+
+                // Test auth methods availability
+                const methods = {
+                    'Email/Password': auth.signInWithEmailAndPassword !== undefined,
+                    'Sign Out': auth.signOut !== undefined,
+                    'Create User': auth.createUserWithEmailAndPassword !== undefined
+                };
+
+                addTestResult('Auth Methods', 'success', 'All authentication methods available', methods);
+                log('✓ Auth methods OK', 'success');
+
+            } catch (error) {
+                addTestResult('Authentication', 'error', error.message);
+                log('✗ Auth test failed: ' + error.message, 'error');
+            }
+        }
+
+        // Test Database
+        async function testDatabase() {
+            log('Testing database operations...', 'info');
+
+            try {
+                // Test Read
+                const usersRef = database.ref('users');
+                const snapshot = await usersRef.limitToFirst(1).once('value');
+                
+                addTestResult('Database Read', 'success', 'Read operation successful', {
+                    userCount: snapshot.numChildren()
+                });
+                log('✓ Database read OK', 'success');
+
+                // Test Write (to test location)
+                const testRef = database.ref('test/' + Date.now());
+                await testRef.set({
+                    test: true,
+                    timestamp: Date.now(),
+                    message: 'Test write operation'
+                });
+
+                addTestResult('Database Write', 'success', 'Write operation successful');
+                log('✓ Database write OK', 'success');
+
+                // Clean up test data
+                await testRef.remove();
+                log('✓ Test data cleaned up', 'success');
+
+                // Test different data types
+                const dataSnapshot = await database.ref('addons').limitToFirst(1).once('value');
+                const templatesSnapshot = await database.ref('templates').limitToFirst(1).once('value');
+                const serversSnapshot = await database.ref('servers').limitToFirst(1).once('value');
+
+                const dataCounts = {
+                    addons: dataSnapshot.numChildren(),
+                    templates: templatesSnapshot.numChildren(),
+                    servers: serversSnapshot.numChildren()
+                };
+
+                addTestResult('Database Structure', 'success', 'Data structure verified', dataCounts);
+                log('✓ Database structure OK', 'success');
+
+            } catch (error) {
+                addTestResult('Database Operations', 'error', error.message);
+                log('✗ Database test failed: ' + error.message, 'error');
+            }
+        }
+
+        // Test Storage
+        async function testStorage() {
+            log('Testing Firebase Storage...', 'info');
+
+            try {
+                // Test storage reference
+                const storageRef = storage.ref();
+                addTestResult('Storage Reference', 'success', 'Storage reference created successfully');
+                log('✓ Storage reference OK', 'success');
+
+                // List files (if any)
+                try {
+                    const listResult = await storageRef.child('images').listAll();
+                    addTestResult('Storage List', 'success', `Found ${listResult.items.length} items in images folder`, {
+                        itemCount: listResult.items.length,
+                        prefixes: listResult.prefixes.length
+                    });
+                    log(`✓ Storage listing OK - ${listResult.items.length} items found`, 'success');
+                } catch (listError) {
+                    addTestResult('Storage List', 'warning', 'Could not list storage items: ' + listError.message);
+                    log('⚠ Storage listing failed: ' + listError.message, 'warning');
+                }
+
+            } catch (error) {
+                addTestResult('Storage Operations', 'error', error.message);
+                log('✗ Storage test failed: ' + error.message, 'error');
+            }
+        }
+
+        // Test Connectivity
+        async function testConnectivity() {
+            log('Testing network connectivity...', 'info');
+
+            try {
+                // Test internet connection
+                const online = navigator.onLine;
+                if (online) {
+                    addTestResult('Internet Connection', 'success', 'Device is online');
+                    log('✓ Internet connection OK', 'success');
+                } else {
+                    addTestResult('Internet Connection', 'error', 'Device is offline');
+                    log('✗ Device offline', 'error');
+                }
+
+                // Test Firebase connectivity
+                const connectedRef = database.ref('.info/connected');
+                const snapshot = await connectedRef.once('value');
+                const connected = snapshot.val();
+
+                if (connected) {
+                    addTestResult('Firebase Connectivity', 'success', 'Connected to Firebase servers');
+                    log('✓ Firebase connection OK', 'success');
+                } else {
+                    addTestResult('Firebase Connectivity', 'error', 'Not connected to Firebase');
+                    log('✗ Firebase not connected', 'error');
+                }
+
+                // Test API endpoints
+                const apiTests = [
+                    { name: 'GitHub API', url: 'https://api.github.com' },
+                    { name: 'Firebase Database', url: firebaseConfig.databaseURL }
+                ];
+
+                for (const api of apiTests) {
+                    try {
+                        const response = await fetch(api.url, { method: 'HEAD' });
+                        addTestResult(`${api.name} Endpoint`, 'success', `Status: ${response.status}`);
+                        log(`✓ ${api.name} endpoint OK`, 'success');
+                    } catch (error) {
+                        addTestResult(`${api.name} Endpoint`, 'error', error.message);
+                        log(`✗ ${api.name} endpoint failed`, 'error');
+                    }
+                }
+
+            } catch (error) {
+                addTestResult('Connectivity Test', 'error', error.message);
+                log('✗ Connectivity test failed: ' + error.message, 'error');
+            }
+        }
+
+        // View Functions
+        async function viewUsers() {
+            log('Loading users data...', 'info');
+            try {
+                const snapshot = await database.ref('users').once('value');
+                const users = [];
+                
+                snapshot.forEach(child => {
+                    users.push({ id: child.key, ...child.val() });
+                });
+
+                displayData('Users', users, ['username', 'email', 'role', 'uploads', 'points']);
+                log(`Loaded ${users.length} users`, 'success');
+            } catch (error) {
+                displayError('Failed to load users: ' + error.message);
+                log('Error loading users: ' + error.message, 'error');
+            }
+        }
+
+        async function viewAddons() {
+            log('Loading addons data...', 'info');
+            try {
+                const snapshot = await database.ref('addons').once('value');
+                const addons = [];
+                
+                snapshot.forEach(child => {
+                    addons.push(child.val());
+                });
+
+                displayData('Addons', addons, ['name', 'author', 'downloads', 'rating']);
+                log(`Loaded ${addons.length} addons`, 'success');
+            } catch (error) {
+                displayError('Failed to load addons: ' + error.message);
+                log('Error loading addons: ' + error.message, 'error');
+            }
+        }
+
+        async function viewServers() {
+            log('Loading servers data...', 'info');
+            try {
+                const snapshot = await database.ref('servers').once('value');
+                const servers = [];
+                
+                snapshot.forEach(child => {
+                    servers.push(child.val());
+                });
+
+                displayData('Servers', servers, ['name', 'ip', 'port', 'author']);
+                log(`Loaded ${servers.length} servers`, 'success');
+            } catch (error) {
+                displayError('Failed to load servers: ' + error.message);
+                log('Error loading servers: ' + error.message, 'error');
+            }
+        }
+
+        async function viewMessages() {
+            log('Loading messages data...', 'info');
+            try {
+                const snapshot = await database.ref('messages').once('value');
+                const messages = [];
+                
+                snapshot.forEach(child => {
+                    messages.push(child.val());
+                });
+
+                displayData('Messages', messages, ['username', 'text', 'timestamp']);
+                log(`Loaded ${messages.length} messages`, 'success');
+            } catch (error) {
+                displayError('Failed to load messages: ' + error.message);
+                log('Error loading messages: ' + error.message, 'error');
+            }
+        }
+
+        async function viewAllData() {
+            log('Loading all database data...', 'info');
+            try {
+                const snapshot = await database.ref('/').once('value');
+                const allData = snapshot.val();
+
+                const viewer = document.getElementById('dataViewer');
+                viewer.innerHTML = `
+                    <div class="alert success">Successfully loaded all data</div>
+                    <div class="json-viewer">
+                        <pre>${JSON.stringify(allData, null, 2)}</pre>
+                    </div>
+                `;
+                log('All data loaded successfully', 'success');
+            } catch (error) {
+                displayError('Failed to load data: ' + error.message);
+                log('Error loading all data: ' + error.message, 'error');
+            }
+        }
+
+        function displayData(title, data, columns) {
+            const viewer = document.getElementById('dataViewer');
+            
+            if (data.length === 0) {
+                viewer.innerHTML = `<div class="alert warning">No ${title.toLowerCase()} found in database</div>`;
+                return;
+            }
+
+            let html = `<h3>${title} (${data.length} items)</h3>`;
+            html += '<table class="data-table"><thead><tr>';
+            
+            columns.forEach(col => {
+                html += `<th>${col}</th>`;
+            });
+            html += '</tr></thead><tbody>';
+
+            data.forEach(item => {
+                html += '<tr>';
+                columns.forEach(col => {
+                    let value = item[col];
+                    if (col === 'timestamp' || col === 'createdAt') {
+                        value = new Date(value).toLocaleString();
+                    }
+                    html += `<td>${value !== undefined ? value : 'N/A'}</td>`;
+                });
+                html += '</tr>';
+            });
+
+            html += '</tbody></table>';
+            viewer.innerHTML = html;
+        }
+
+        function displayError(message) {
+            const viewer = document.getElementById('dataViewer');
+            viewer.innerHTML = `<div class="alert error">${message}</div>`;
+        }
+
+        // Clear All Data (DANGEROUS!)
+        async function clearAllData() {
+            if (!confirm('⚠️ WARNING: This will delete ALL data from the database! Are you sure?')) {
+                return;
+            }
+
+            if (!confirm('This action cannot be undone! Type YES in the next prompt to confirm.')) {
+                return;
+            }
+
+            const confirmation = prompt('Type "DELETE ALL DATA" to confirm:');
+            if (confirmation !== 'DELETE ALL DATA') {
+                log('Data deletion cancelled', 'warning');
+                return;
+            }
+
+            log('Starting database cleanup...', 'warning');
+
+            try {
+                await database.ref('test').remove();
+                log('✓ Test data cleared', 'success');
+                
+                // Note: Only clearing test data, not actual user data for safety
+                addTestResult('Data Cleanup', 'success', 'Test data cleared successfully');
+                alert('Only test data was cleared. To clear all data, modify the clearAllData function.');
+                
+            } catch (error) {
+                log('✗ Failed to clear data: ' + error.message, 'error');
+                addTestResult('Data Cleanup', 'error', error.message);
+            }
+        }
+
+        // Initialize on load
+        window.addEventListener('load', function() {
+            updateSystemInfo();
+            setInterval(updateSystemInfo, 5000); // Update every 5 seconds
+            
+            log('Test console ready!', 'success');
+            log('Click "Run All Tests" to start comprehensive testing', 'info');
+        });
+
+        // Monitor authentication state
+        auth.onAuthStateChanged(user => {
+            if (user) {
+                log(`User authenticated: ${user.email}`, 'success');
+            } else {
+                log('No user authenticated', 'warning');
+            }
+        });
+
+        // Monitor database connection
+        database.ref('.info/connected').on('value', snapshot => {
+            if (snapshot.val()) {
+                log('Firebase Database connected', 'success');
+            } else {
+                log('Firebase Database disconnected', 'error');
+            }
+        });
+    </script>
+</body>
+</html>
