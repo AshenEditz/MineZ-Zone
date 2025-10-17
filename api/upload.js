@@ -1,4 +1,4 @@
-// api/upload.js - No external dependencies needed!
+// api/upload.js - Fixed version with SHA handling
 
 module.exports = async (req, res) => {
     // Enable CORS
@@ -41,7 +41,44 @@ module.exports = async (req, res) => {
 
         console.log('📤 Uploading to GitHub:', path);
 
-        // Use native fetch (available in Node.js 18+)
+        // First, check if file exists
+        let sha = null;
+        try {
+            const checkResponse = await fetch(
+                `https://api.github.com/repos/${GITHUB_USERNAME}/${GITHUB_REPO}/contents/${path}`,
+                {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `token ${GITHUB_TOKEN}`,
+                        'User-Agent': 'MineZ-Zone-App'
+                    }
+                }
+            );
+
+            if (checkResponse.ok) {
+                const existingFile = await checkResponse.json();
+                sha = existingFile.sha;
+                console.log('File exists, updating with SHA:', sha);
+            }
+        } catch (error) {
+            console.log('File does not exist, creating new file');
+        }
+
+        // Upload or update file
+        const uploadBody = {
+            message: message,
+            content: content,
+            committer: {
+                name: username || 'MineZ Zone User',
+                email: 'upload@minezzone.app'
+            }
+        };
+
+        // Add SHA if file exists
+        if (sha) {
+            uploadBody.sha = sha;
+        }
+
         const response = await fetch(
             `https://api.github.com/repos/${GITHUB_USERNAME}/${GITHUB_REPO}/contents/${path}`,
             {
@@ -51,14 +88,7 @@ module.exports = async (req, res) => {
                     'Content-Type': 'application/json',
                     'User-Agent': 'MineZ-Zone-App'
                 },
-                body: JSON.stringify({
-                    message: message,
-                    content: content,
-                    committer: {
-                        name: username || 'MineZ Zone User',
-                        email: 'upload@minezzone.app'
-                    }
-                })
+                body: JSON.stringify(uploadBody)
             }
         );
 
@@ -79,7 +109,8 @@ module.exports = async (req, res) => {
             success: true,
             url: rawUrl,
             downloadUrl: data.content.download_url,
-            path: path
+            path: path,
+            sha: data.content.sha
         });
 
     } catch (error) {
