@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MineZ Zone - Minecraft Addons & More</title>
+    <title>MineZ Zone - Minecraft Community</title>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
@@ -17,10 +17,30 @@
         <div class="cube"></div>
     </div>
 
+    <!-- Floating Upload Button (Shows when logged in) -->
+    <div id="floatingUpload" class="floating-upload" style="display:none;">
+        <button class="floating-btn" onclick="toggleUploadMenu()">
+            <i class="fas fa-plus"></i>
+        </button>
+        <div id="uploadMenu" class="upload-menu" style="display:none;">
+            <button onclick="openUploadModal('addons')"><i class="fas fa-puzzle-piece"></i> Addon</button>
+            <button onclick="openUploadModal('templates')"><i class="fas fa-map"></i> Template</button>
+            <button onclick="openUploadModal('shaders')"><i class="fas fa-sun"></i> Shader</button>
+            <button onclick="openUploadModal('skins')"><i class="fas fa-user"></i> Skin</button>
+            <button onclick="openServerModal()"><i class="fas fa-server"></i> Server</button>
+        </div>
+    </div>
+
+    <!-- Chat Notification Badge -->
+    <div id="chatNotification" class="chat-notification" style="display:none;" onclick="openChat()">
+        <i class="fas fa-comment"></i>
+        <span class="notification-badge" id="chatBadgeCount">0</span>
+    </div>
+
     <!-- Header -->
     <header class="header">
         <div class="container">
-            <div class="logo">
+            <div class="logo" onclick="navigateTo('home')">
                 <i class="fas fa-cube"></i>
                 <span class="logo-text">MineZ Zone</span>
             </div>
@@ -32,12 +52,16 @@
                 <a href="#skins" class="nav-link">3D Skins</a>
                 <a href="#servers" class="nav-link">Servers</a>
                 <a href="#leaderboard" class="nav-link" id="leaderboardLink" style="display:none;">Leaderboard</a>
+                <a href="#profile" class="nav-link" id="profileLink" style="display:none;">Profile</a>
             </nav>
             <div class="auth-buttons">
                 <button class="btn btn-login" id="loginBtn">Login</button>
                 <button class="btn btn-register" id="registerBtn">Register</button>
                 <div class="user-profile" id="userProfile" style="display:none;">
-                    <img src="https://ui-avatars.com/api/?name=User&background=00ffff&color=000" alt="Profile" class="profile-img" id="profileImg">
+                    <div class="profile-badge-wrapper">
+                        <img src="https://ui-avatars.com/api/?name=User&background=00ffff&color=000" alt="Profile" class="profile-img" id="profileImg">
+                        <span class="user-badges-mini" id="headerBadges"></span>
+                    </div>
                     <span class="username" id="headerUsername"></span>
                     <button class="btn btn-logout" id="logoutBtn">Logout</button>
                 </div>
@@ -116,9 +140,7 @@
                 <!-- Recent Uploads -->
                 <div class="recent-uploads">
                     <h2 class="section-title">Recent Uploads</h2>
-                    <div class="content-grid" id="recentContent">
-                        <!-- Dynamic content will be loaded here -->
-                    </div>
+                    <div class="content-grid" id="recentContent"></div>
                 </div>
             </div>
         </section>
@@ -128,13 +150,8 @@
             <div class="container">
                 <div class="section-header">
                     <h2 class="section-title">MC Addons</h2>
-                    <button class="btn btn-primary" id="uploadAddonBtn" style="display:none;">
-                        <i class="fas fa-upload"></i> Upload Addon
-                    </button>
                 </div>
-                <div class="content-grid" id="addonsGrid">
-                    <!-- Dynamic content -->
-                </div>
+                <div class="content-grid" id="addonsGrid"></div>
             </div>
         </section>
 
@@ -143,13 +160,8 @@
             <div class="container">
                 <div class="section-header">
                     <h2 class="section-title">MC Templates</h2>
-                    <button class="btn btn-primary" id="uploadTemplateBtn" style="display:none;">
-                        <i class="fas fa-upload"></i> Upload Template
-                    </button>
                 </div>
-                <div class="content-grid" id="templatesGrid">
-                    <!-- Dynamic content -->
-                </div>
+                <div class="content-grid" id="templatesGrid"></div>
             </div>
         </section>
 
@@ -158,13 +170,8 @@
             <div class="container">
                 <div class="section-header">
                     <h2 class="section-title">MC Shaders</h2>
-                    <button class="btn btn-primary" id="uploadShaderBtn" style="display:none;">
-                        <i class="fas fa-upload"></i> Upload Shader
-                    </button>
                 </div>
-                <div class="content-grid" id="shadersGrid">
-                    <!-- Dynamic content -->
-                </div>
+                <div class="content-grid" id="shadersGrid"></div>
             </div>
         </section>
 
@@ -173,13 +180,8 @@
             <div class="container">
                 <div class="section-header">
                     <h2 class="section-title">3D Skins</h2>
-                    <button class="btn btn-primary" id="uploadSkinBtn" style="display:none;">
-                        <i class="fas fa-upload"></i> Upload Skin
-                    </button>
                 </div>
-                <div class="content-grid" id="skinsGrid">
-                    <!-- Dynamic content -->
-                </div>
+                <div class="content-grid" id="skinsGrid"></div>
             </div>
         </section>
 
@@ -188,12 +190,8 @@
             <div class="container">
                 <div class="section-header">
                     <h2 class="section-title">Minecraft Servers</h2>
-                    <button class="btn btn-primary" id="uploadServerBtn" style="display:none;">
-                        <i class="fas fa-upload"></i> Add Server
-                    </button>
                 </div>
 
-                <!-- Top Servers -->
                 <div class="top-servers">
                     <h3 class="subsection-title">Top Servers</h3>
                     <div class="server-list">
@@ -241,12 +239,9 @@
                     </div>
                 </div>
 
-                <!-- Other Servers -->
                 <div class="other-servers">
                     <h3 class="subsection-title">Community Servers</h3>
-                    <div class="server-list" id="communityServers">
-                        <!-- Dynamic content -->
-                    </div>
+                    <div class="server-list" id="communityServers"></div>
                 </div>
             </div>
         </section>
@@ -262,9 +257,7 @@
                         <span>Uploads</span>
                         <span>Points</span>
                     </div>
-                    <div class="leaderboard-list" id="leaderboardList">
-                        <!-- Dynamic content -->
-                    </div>
+                    <div class="leaderboard-list" id="leaderboardList"></div>
                 </div>
             </div>
         </section>
@@ -274,10 +267,20 @@
             <div class="container">
                 <div class="profile-container">
                     <div class="profile-header">
-                        <img src="" alt="Profile" class="profile-avatar" id="profileAvatar">
+                        <div class="profile-avatar-section">
+                            <div class="profile-badge-wrapper">
+                                <img src="" alt="Profile" class="profile-avatar" id="profileAvatar">
+                                <div class="profile-badges-overlay" id="profileBadgesOverlay"></div>
+                            </div>
+                            <button class="btn btn-primary" id="editProfileBtn" onclick="openEditProfileModal()">
+                                <i class="fas fa-edit"></i> Edit Profile
+                            </button>
+                        </div>
                         <div class="profile-info">
                             <h2 class="profile-name" id="profileName"></h2>
                             <div class="profile-badges" id="profileBadges"></div>
+                            <p class="profile-email" id="profileEmail"></p>
+                            <p class="profile-joined">Joined <span id="profileJoined"></span></p>
                         </div>
                     </div>
                     <div class="profile-stats">
@@ -289,7 +292,7 @@
                         <div class="profile-stat">
                             <i class="fas fa-download"></i>
                             <span class="stat-number" id="profileDownloads">0</span>
-                            <span class="stat-label">Downloads</span>
+                            <span class="stat-label">Total Downloads</span>
                         </div>
                         <div class="profile-stat">
                             <i class="fas fa-star"></i>
@@ -299,9 +302,7 @@
                     </div>
                     <div class="profile-content">
                         <h3>My Uploads</h3>
-                        <div class="content-grid" id="profileContentGrid">
-                            <!-- Dynamic content -->
-                        </div>
+                        <div class="content-grid" id="profileContentGrid"></div>
                     </div>
                 </div>
             </div>
@@ -324,25 +325,47 @@
                             <p class="admin-stat-number" id="adminTotalContent">0</p>
                         </div>
                         <div class="admin-stat-card">
+                            <i class="fas fa-clock"></i>
+                            <h3>Pending Approval</h3>
+                            <p class="admin-stat-number" id="adminPendingContent">0</p>
+                        </div>
+                        <div class="admin-stat-card">
                             <i class="fas fa-comments"></i>
                             <h3>Messages</h3>
                             <p class="admin-stat-number" id="adminTotalMessages">0</p>
                         </div>
                     </div>
 
-                    <div class="admin-sections">
-                        <div class="admin-section">
-                            <h3>User Management</h3>
-                            <div class="admin-users-list" id="adminUsersList">
-                                <!-- Dynamic content -->
-                            </div>
+                    <div class="admin-tabs">
+                        <button class="admin-tab active" onclick="switchAdminTab('pending')">Pending Approvals</button>
+                        <button class="admin-tab" onclick="switchAdminTab('users')">User Management</button>
+                        <button class="admin-tab" onclick="switchAdminTab('messages')">Messages</button>
+                        <button class="admin-tab" onclick="switchAdminTab('content')">All Content</button>
+                    </div>
+
+                    <div class="admin-tab-content">
+                        <!-- Pending Approvals -->
+                        <div id="admin-pending" class="admin-section active">
+                            <h3>Pending Content Approval</h3>
+                            <div id="adminPendingList"></div>
                         </div>
 
-                        <div class="admin-section">
+                        <!-- User Management -->
+                        <div id="admin-users" class="admin-section" style="display:none;">
+                            <h3>User Management</h3>
+                            <div id="adminUsersList"></div>
+                        </div>
+
+                        <!-- Messages -->
+                        <div id="admin-messages" class="admin-section" style="display:none;">
                             <h3>User Messages</h3>
-                            <div class="admin-messages-list" id="adminMessagesList">
-                                <!-- Dynamic content -->
-                            </div>
+                            <div id="adminMessagesList"></div>
+                        </div>
+
+                        <!-- All Content -->
+                        <div id="admin-content" class="admin-section" style="display:none;">
+                            <h3>All Content Management</h3>
+                            <div id="adminContentList"></div>
                         </div>
                     </div>
                 </div>
@@ -403,16 +426,15 @@
             <h4><i class="fas fa-comment"></i> Chat with Admin</h4>
             <button class="close-chat" id="closeChatBtn"><i class="fas fa-times"></i></button>
         </div>
-        <div class="chat-messages" id="chatMessages">
-            <!-- Dynamic messages -->
-        </div>
+        <div class="chat-messages" id="chatMessages"></div>
         <div class="chat-input">
-            <input type="text" id="chatMessageInput" placeholder="Type your message...">
+            <input type="text" id="chatMessageInput" placeholder="Type your message..." maxlength="500">
             <button id="sendChatBtn"><i class="fas fa-paper-plane"></i></button>
         </div>
     </div>
 
-    <!-- Modals -->
+    <!-- MODALS -->
+
     <!-- Login Modal -->
     <div class="modal" id="loginModal">
         <div class="modal-content">
@@ -440,7 +462,7 @@
             <form id="registerForm">
                 <div class="form-group">
                     <label><i class="fas fa-user"></i> Username</label>
-                    <input type="text" id="registerUsername" required>
+                    <input type="text" id="registerUsername" required minlength="3" maxlength="20">
                 </div>
                 <div class="form-group">
                     <label><i class="fas fa-envelope"></i> Email</label>
@@ -448,42 +470,51 @@
                 </div>
                 <div class="form-group">
                     <label><i class="fas fa-lock"></i> Password</label>
-                    <input type="password" id="registerPassword" required>
+                    <input type="password" id="registerPassword" required minlength="6">
                 </div>
                 <button type="submit" class="btn btn-primary btn-block">Register</button>
             </form>
         </div>
     </div>
 
-    <!-- Upload Modals -->
+    <!-- Upload Modal -->
     <div class="modal" id="uploadModal">
-        <div class="modal-content">
+        <div class="modal-content modal-large">
             <span class="close-modal">&times;</span>
             <h2 id="uploadModalTitle">Upload Content</h2>
             <form id="uploadForm">
                 <div class="form-group">
                     <label><i class="fas fa-heading"></i> Name</label>
-                    <input type="text" id="uploadName" required>
+                    <input type="text" id="uploadName" required maxlength="100">
                 </div>
                 <div class="form-group">
                     <label><i class="fas fa-align-left"></i> Description</label>
-                    <textarea id="uploadDescription" rows="4" required></textarea>
+                    <textarea id="uploadDescription" rows="4" required maxlength="500"></textarea>
                 </div>
                 <div class="form-group">
-                    <label><i class="fas fa-image"></i> Image</label>
+                    <label><i class="fas fa-image"></i> Image (Max 10MB)</label>
                     <input type="file" id="uploadImage" accept="image/*" required>
+                    <small>Recommended: 800x600px, PNG/JPG</small>
                 </div>
                 <div class="form-group" id="uploadFileGroup">
-                    <label><i class="fas fa-file"></i> File</label>
+                    <label><i class="fas fa-file"></i> File (Max 50MB)</label>
                     <input type="file" id="uploadFile" required>
+                    <small>Accepted: .mcpack, .mcaddon, .mcworld, .mctemplate</small>
                 </div>
                 <input type="hidden" id="uploadType">
-                <button type="submit" class="btn btn-primary btn-block">Upload</button>
+                <div class="upload-progress" id="uploadProgress" style="display:none;">
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="uploadProgressBar">0%</div>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary btn-block">
+                    <i class="fas fa-upload"></i> Upload
+                </button>
             </form>
         </div>
     </div>
 
-    <!-- Server Upload Modal -->
+    <!-- Server Modal -->
     <div class="modal" id="serverModal">
         <div class="modal-content">
             <span class="close-modal">&times;</span>
@@ -491,11 +522,11 @@
             <form id="serverForm">
                 <div class="form-group">
                     <label><i class="fas fa-server"></i> Server Name</label>
-                    <input type="text" id="serverName" required>
+                    <input type="text" id="serverName" required maxlength="100">
                 </div>
                 <div class="form-group">
                     <label><i class="fas fa-align-left"></i> Description</label>
-                    <textarea id="serverDescription" rows="4" required></textarea>
+                    <textarea id="serverDescription" rows="4" required maxlength="500"></textarea>
                 </div>
                 <div class="form-group">
                     <label><i class="fas fa-globe"></i> IP Address</label>
@@ -518,23 +549,62 @@
     <div class="modal" id="contentModal">
         <div class="modal-content modal-large">
             <span class="close-modal">&times;</span>
-            <div class="content-detail" id="contentDetail">
-                <!-- Dynamic content -->
-            </div>
+            <div class="content-detail" id="contentDetail"></div>
+        </div>
+    </div>
+
+    <!-- Edit Profile Modal -->
+    <div class="modal" id="editProfileModal">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <h2>Edit Profile</h2>
+            <form id="editProfileForm">
+                <div class="form-group">
+                    <label><i class="fas fa-user"></i> Username</label>
+                    <input type="text" id="editUsername" required minlength="3" maxlength="20">
+                    <small>Change your display name</small>
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-info-circle"></i> Bio</label>
+                    <textarea id="editBio" rows="3" maxlength="200" placeholder="Tell us about yourself..."></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary btn-block">Save Changes</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Edit Content Modal (Admin) -->
+    <div class="modal" id="editContentModal">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <h2>Edit Content</h2>
+            <form id="editContentForm">
+                <div class="form-group">
+                    <label><i class="fas fa-heading"></i> Name</label>
+                    <input type="text" id="editContentName" required>
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-align-left"></i> Description</label>
+                    <textarea id="editContentDescription" rows="4" required></textarea>
+                </div>
+                <input type="hidden" id="editContentId">
+                <input type="hidden" id="editContentType">
+                <button type="submit" class="btn btn-primary btn-block">Save Changes</button>
+            </form>
         </div>
     </div>
 
     <!-- Loading Spinner -->
     <div class="loading-spinner" id="loadingSpinner" style="display:none;">
         <div class="spinner"></div>
+        <p>Loading...</p>
     </div>
 
     <!-- Firebase -->
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-storage-compat.js"></script>
 
     <script src="script.js"></script>
 </body>
-</html>
+    </html>
